@@ -45,7 +45,7 @@ Strategy.prototype.authenticate = function(req, options) {
 
         if(config.useCookie === true)
         {
-            if(!req.cookies.IDSRV3.tokens || req.query.state !== req.cookies.IDSRV3.tokens.state) {
+            if(!req.cookies.IDSRV3 || !req.cookies.IDSRV3.tokens || req.query.state !== req.cookies.IDSRV3.tokens.state) {
                 return this.error(new Error('State does not match session.'));
             }            
         }
@@ -69,6 +69,9 @@ Strategy.prototype.authenticate = function(req, options) {
             } else {
                 
                 if(config.useCookie === true){
+                    if(!req.cookies.IDSRV3){
+                        req.cookies.IDSRV3 = {};
+                    }
                     req.cookies.IDSRV3.tokens = null;
                 }
                 else{
@@ -79,6 +82,9 @@ Strategy.prototype.authenticate = function(req, options) {
     } else {
         var state = common.randomHex(16);
         if(config.useCookie === true){
+            if(!req.cookies.IDSRV3){
+                req.cookies.IDSRV3 = {};
+            }
             req.cookies.IDSRV3.tokens = {
                 state: state
             };
@@ -111,6 +117,9 @@ Strategy.prototype.endSession = function(req, res) {
     {
         // Clean up session for passport just in case express session is not being used.
         req.logout();
+        if(!req.cookies.IDSRV3){
+            req.cookies.IDSRV3 = {};
+        }        
         req.cookies.IDSRV3.tokens = null;
         res.cookie('IDSRV3', req.cookies.IDSRV3);
     }

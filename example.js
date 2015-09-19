@@ -9,6 +9,7 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 var app = express();
 
+app.use(express.cookieParser());
 app.use(session({ secret: 'keyboard mouse' }));
 app.use(passport.initialize());
 app.use(passport.session());

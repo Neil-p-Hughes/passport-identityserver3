@@ -16,8 +16,15 @@ Client.prototype.getTokens = function(req, callback) {
             code: req.query.code,
             redirect_uri: this.callbackUrl(req)
         };
+        if(config.useCookie === true)
+        {
+            getAccessToken(req.cookies.IDSRV3, config, params, callback);
+        }
+        else
+        {
+            getAccessToken(req._passport.session, config, params, callback);
+        }
 
-    getAccessToken(req._passport.session, config, params, callback);
 };
 
 Client.prototype.getProfile = function(req, scopes, claims, callback) {
@@ -40,9 +47,17 @@ Client.prototype.getProfile = function(req, scopes, claims, callback) {
 }
 
 Client.prototype.ensureActiveToken = function(req, callback) {
-    var tokens = req._passport.session.tokens,
-        config = this.config,
-        params;
+    var config = this.config,
+        params, tokens;
+    
+    if(config.useCookie === true)
+    {
+        tokens = req.cookies.IDSRV3.tokens;
+    }
+    else
+    {
+        tokens = req._passport.session.tokens;
+    }
 
     function tokenHandle(err, tokens) {
         if(err) {
@@ -63,7 +78,15 @@ Client.prototype.ensureActiveToken = function(req, callback) {
             scope: this.scope()
         };
 
-        getAccessToken(req._passport.session, config, params, tokenHandle);
+        if(config.useCookie === true)
+        {
+            getAccessToken(req.cookies.IDSRV3, config, params, tokenHandle);
+        }
+        else
+        {
+            getAccessToken(req._passport.session, config, params, tokenHandle);
+        }
+        
     }
 };
 
@@ -85,8 +108,19 @@ Client.prototype.authorizationUrl = function(req, state) {
 };
 
 Client.prototype.getEndSessionUrl = function(req) {
-    var session = req._passport.session,
-        params = {
+    var config = this.config;
+    var session;
+    if(config.useCookie === true)
+    {
+        session = req.cookies.IDSRV3;
+    }
+    else
+    {
+        session = req._passport.session;
+    }
+
+     
+    var params = {
             id_token_hint: session.tokens.id_token,
             post_logout_redirect_uri: this.config.post_logout_redirect_uri || common.resolveUrl(req, '/')
         };

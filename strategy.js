@@ -7,11 +7,15 @@ var passport = require('passport'),
 function Strategy(identifier, config) {
     if(typeof(identifier) === 'object') {
         config = identifier;
-        identifier = 'identity3-oidc';
+        identifier = 'passport-IDSRV3';
     }
 
     if(!config || !config.client_id || !config.client_secret || !config.callback_url) {
         throw new Error('The require config settings are not present [client_id, client_secret, callback_url]');
+    }
+    if(!(config.useCookie === true))
+    {
+        config.useCookie = false;
     }
 
     passport.Strategy.call(this);
@@ -33,13 +37,23 @@ Strategy.prototype.authenticate = function(req, options) {
     if(req.query.error) {
         return this.error(new Error(req.query.error));
     } else if(req.query.code) {
-        if(!req._passport.session.tokens || req.query.state !== req._passport.session.tokens.state) {
-            return this.error(new Error('State does not match session.'));
-        }
+        
 
         var self = this,
             config = self.config;
 
+        if(config.useCookie === true)
+        {
+            if(!req.cookies.IDSRV3.tokens || req.query.state !== req.cookies.IDSRV3.tokens.state) {
+                return this.error(new Error('State does not match session.'));
+            }            
+        }
+        else
+        {
+            if(!req._passport.session.tokens || req.query.state !== req._passport.session.tokens.state) {
+                return this.error(new Error('State does not match session.'));
+            }
+        }
         this.client.getTokens(req, function(err, data) {
             var user;
 
@@ -52,15 +66,27 @@ Strategy.prototype.authenticate = function(req, options) {
 
                 self.success(user);
             } else {
-                req._passport.session.tokens = null;
+                
+                if(config.useCookie === true){
+                    req.cookies.IDSRV3.tokens = null;
+                }
+                else{
+                    req._passport.session.tokens = null;
+                }
             }
         });
     } else {
         var state = common.randomHex(16);
-
-        req._passport.session.tokens = {
-            state: state
-        };
+        if(config.useCookie === true){
+            req.cookies.IDSRV3.tokens = {
+                state: state
+            };
+        }
+        else{
+            req._passport.session.tokens = {
+                state: state
+            };
+        }
 
         this.redirect(this.client.authorizationUrl(req, state));
     }
@@ -77,13 +103,26 @@ Strategy.prototype.profile = function(req, scopes, claims, callback) {
 Strategy.prototype.endSession = function(req, res) {
     var endSessionUrl = this.client.getEndSessionUrl(req);
 
-    // Clean up session for passport just in case express session is not being used.
-    req.logout();
-    req._passport.session.tokens = null;
-
-    // Destroy express session if possible
-    if(req.session && req.session.destroy) {
-        req.session.destroy();
+    var self = this,
+        config = self.config;
+        
+    if(config.useCookie === true)
+    {
+        // Clean up session for passport just in case express session is not being used.
+        req.logout();
+        req.cookies.IDSRV3.tokens = null;
+        res.cookie('IDSRV3', req.cookies.IDSRV3);
+    }
+    else
+    {
+        // Clean up session for passport just in case express session is not being used.
+        req.logout();
+        req._passport.session.tokens = null;
+    
+        // Destroy express session if possible
+        if(req.session && req.session.destroy) {
+            req.session.destroy();
+        }
     }
 
     res.redirect(endSessionUrl);

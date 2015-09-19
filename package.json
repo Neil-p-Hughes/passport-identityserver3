@@ -1,5 +1,5 @@
 {
-  "name": "passport-identityserver3",
+  "name": "passport-IDSRV3",
   "version": "0.2.1",
   "description": "Passport strategy for IdentityServer3 OpenID Connect Provider",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:markgardner/passport-identityserver3.git"
+    "url": "git@github.com:Neil-p-Hughes/passport-identityserver3.git"
   },
   "keywords": [
     "IdentityServer",
@@ -17,18 +17,19 @@
     "passport",
     "oidc"
   ],
-  "author": "Mark Gardner",
+  "author": "Neil p Hughes, Mark Gardner",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/markgardner/passport-identityserver3/issues"
+    "url": "https://github.com/Neil-p-Hughes/passport-identityserver3/issues"
   },
-  "homepage": "https://github.com/markgardner/passport-identityserver3",
+  "homepage": "https://github.com/Neil-p-Hughes/passport-identityserver3",
   "dependencies": {
     "json-extend": "^0.1.0",
     "jsonwebtoken": "^5.0.4"
   },
   "peerDependencies": {
-    "passport": "^0.2.2"
+    "passport": "^0.3.0",
+    "cookie-parser": "^1.3.5"
   },
   "devDependencies": {
     "express": "^4.13.3",

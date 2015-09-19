@@ -34,13 +34,14 @@ require('util').inherits(Strategy, passport.Strategy);
 /*********** Passport Strategy Impl ***********/
 
 Strategy.prototype.authenticate = function(req, options) {
+
+        var self = this,
+            config = self.config;
     if(req.query.error) {
         return this.error(new Error(req.query.error));
     } else if(req.query.code) {
         
 
-        var self = this,
-            config = self.config;
 
         if(config.useCookie === true)
         {

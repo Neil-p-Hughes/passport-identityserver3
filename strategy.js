@@ -73,6 +73,7 @@ Strategy.prototype.authenticate = function(req, options) {
                         req.cookies.IDSRV3 = {};
                     }
                     req.cookies.IDSRV3.tokens = null;
+                    req.res.cookie('IDSRV3', req.cookies.IDSRV3);
                 }
                 else{
                     req._passport.session.tokens = null;
@@ -88,6 +89,7 @@ Strategy.prototype.authenticate = function(req, options) {
             req.cookies.IDSRV3.tokens = {
                 state: state
             };
+            req.res.cookie('IDSRV3', req.cookies.IDSRV3);
         }
         else{
             req._passport.session.tokens = {
@@ -121,7 +123,7 @@ Strategy.prototype.endSession = function(req, res) {
             req.cookies.IDSRV3 = {};
         }        
         req.cookies.IDSRV3.tokens = null;
-        res.cookie('IDSRV3', req.cookies.IDSRV3);
+        req.res.cookie('IDSRV3', req.cookies.IDSRV3);
     }
     else
     {

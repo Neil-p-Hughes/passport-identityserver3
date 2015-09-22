@@ -18,8 +18,7 @@ Client.prototype.getTokens = function(req, callback) {
         };
         if(config.useCookie === true)
         {
-            getAccessToken(req.cookies.IDSRV3, config, params, callback);
-            req.res.cookie('IDSRV3', req.cookies.IDSRV3);
+            getAccessToken(req.cookies.IDSRV3, config, params, callback, req);
         }
         else
         {
@@ -81,8 +80,8 @@ Client.prototype.ensureActiveToken = function(req, callback) {
 
         if(config.useCookie === true)
         {
-            getAccessToken(req.cookies.IDSRV3, config, params, tokenHandle);
-            req.res.cookie('IDSRV3', req.cookies.IDSRV3);
+            getAccessToken(req.cookies.IDSRV3, config, params, tokenHandle, req);
+            
         }
         else
         {
@@ -130,7 +129,7 @@ Client.prototype.getEndSessionUrl = function(req) {
     return common.addQuery(this.config.end_session_endpoint, params);
 };
 
-function getAccessToken(session, config, params, callback) {
+function getAccessToken(session, config, params, callback, req) {
     extend(params, {
         client_id: config.client_id,
         client_secret: config.client_secret
@@ -143,7 +142,11 @@ function getAccessToken(session, config, params, callback) {
         data.expires_at = Date.now() + (data.expires_in * 1000) - common.timeout; // Take off a buffer so token won't expire mid call
 
         session.tokens = data;
-
+        
+        if(config.useCookie === true)
+        {
+            req.res.cookie('IDSRV3', req.cookies.IDSRV3);            
+        }
         callback(null, data);
     });
 }

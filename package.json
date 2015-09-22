@@ -1,6 +1,6 @@
 {
   "name": "passport-idsrv3",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Passport strategy for IdentityServer3 OpenID Connect Provider",
   "main": "index.js",
   "scripts": {

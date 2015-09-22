@@ -19,6 +19,7 @@ Client.prototype.getTokens = function(req, callback) {
         if(config.useCookie === true)
         {
             getAccessToken(req.cookies.IDSRV3, config, params, callback);
+            req.res.cookie('IDSRV3', req.cookies.IDSRV3);
         }
         else
         {
@@ -81,6 +82,7 @@ Client.prototype.ensureActiveToken = function(req, callback) {
         if(config.useCookie === true)
         {
             getAccessToken(req.cookies.IDSRV3, config, params, tokenHandle);
+            req.res.cookie('IDSRV3', req.cookies.IDSRV3);
         }
         else
         {

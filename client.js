@@ -91,11 +91,12 @@ Client.prototype.ensureActiveToken = function(req, callback) {
     }
 };
 
-Client.prototype.callbackUrl = function(req) {
-    return common.resolveUrl(req, this.config.callback_url);
-};
 Client.prototype.callbackUrlWithQueryParams = function(req) {
-    var params = extend( {} ,req.query);
+    //var params = extend( {} ,req.query);
+    var params = {};
+    if (req.query) {
+        params.returnPath = req.query.returnPath;
+    }
     if(Object.keys(params).length === 0)
     {
         return common.resolveUrl(req, this.config.callback_url);
@@ -105,6 +106,8 @@ Client.prototype.callbackUrlWithQueryParams = function(req) {
         return common.resolveUrl(req, common.addQuery(this.config.callback_url, params ));
     }
 };
+Client.prototype.callbackUrl = Client.prototype.callbackUrlWithQueryParams;
+
 
 Client.prototype.authorizationUrl = function(req, state) {
     var config = this.config,

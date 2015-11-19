@@ -92,7 +92,8 @@ Client.prototype.ensureActiveToken = function(req, callback) {
 };
 
 Client.prototype.callbackUrl = function(req) {
-    return common.resolveUrl(req, this.config.callback_url);
+    return common.resolveUrl(req, common.addQuery(this.config.callback_url, extend( {} ,req.query) ));
+    //return common.resolveUrl(req, this.config.callback_url);
 };
 
 Client.prototype.authorizationUrl = function(req, state) {

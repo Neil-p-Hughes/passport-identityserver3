@@ -95,7 +95,15 @@ Client.prototype.callbackUrl = function(req) {
     return common.resolveUrl(req, this.config.callback_url);
 };
 Client.prototype.callbackUrlWithQueryParams = function(req) {
-    return common.resolveUrl(req, common.addQuery(this.config.callback_url, extend( {} ,req.query) ));
+    var params = extend( {} ,req.query);
+    if(Object.keys(params).length === 0)
+    {
+        return common.resolveUrl(req, this.config.callback_url);
+    }
+    else
+    {
+        return common.resolveUrl(req, common.addQuery(this.config.callback_url, params ));
+    }
 };
 
 Client.prototype.authorizationUrl = function(req, state) {

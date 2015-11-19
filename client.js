@@ -92,8 +92,10 @@ Client.prototype.ensureActiveToken = function(req, callback) {
 };
 
 Client.prototype.callbackUrl = function(req) {
+    return common.resolveUrl(req, this.config.callback_url);
+};
+Client.prototype.callbackUrlWithQueryParams = function(req) {
     return common.resolveUrl(req, common.addQuery(this.config.callback_url, extend( {} ,req.query) ));
-    //return common.resolveUrl(req, this.config.callback_url);
 };
 
 Client.prototype.authorizationUrl = function(req, state) {
@@ -102,7 +104,7 @@ Client.prototype.authorizationUrl = function(req, state) {
             state: state,
             response_type: 'code',
             client_id: config.client_id,
-            redirect_uri: this.callbackUrl(req),
+            redirect_uri: this.callbackUrlWithQueryParams(req),
             scope: this.scope()
         });
 
